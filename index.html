@@ -1,0 +1,555 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Milk Account</title>
+<meta name="theme-color" content="#167d43">
+
+<link rel="manifest" href="./manifest.json">
+
+<link rel="icon" href="./icon.svg" type="image/svg+xml">
+
+<meta name="apple-mobile-web-app-capable" content="yes">
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f3f7f3;
+      color: #203329;
+    }
+
+    header {
+      background: #167d43;
+      color: white;
+      padding: 22px 16px;
+      text-align: center;
+    }
+
+    header h1 { margin: 0 0 7px; }
+    header p { margin: 0; }
+
+    main {
+      max-width: 850px;
+      margin: 20px auto;
+      padding: 0 14px 30px;
+    }
+
+    .summary {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .card, .panel {
+      background: white;
+      border-radius: 12px;
+      padding: 17px;
+      box-shadow: 0 2px 8px #0000000b;
+    }
+
+    .card span {
+      display: block;
+      color: #65756a;
+      font-size: 14px;
+    }
+
+    .card strong {
+      display: block;
+      margin-top: 8px;
+      font-size: 23px;
+      overflow-wrap: anywhere;
+    }
+
+    .panel { margin-bottom: 18px; }
+
+    h2 {
+      font-size: 19px;
+      margin: 0 0 16px;
+    }
+
+    label {
+      display: block;
+      margin: 12px 0 6px;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    input, select, button {
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+
+    input, select {
+      border: 1px solid #ccd8ce;
+      background: white;
+    }
+
+    button {
+      border: 0;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .primary {
+      background: #167d43;
+      color: white;
+      margin-top: 16px;
+    }
+
+    .secondary {
+      background: #e3f2e7;
+      color: #176b3c;
+      margin-top: 10px;
+    }
+
+    .danger {
+      background: #ffebeb;
+      color: #b42318;
+      padding: 8px;
+      font-size: 13px;
+      margin-top: 8px;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .record {
+      border-top: 1px solid #e4eae5;
+      padding: 13px 0;
+      overflow-wrap: anywhere;
+    }
+
+    .record p {
+      margin: 6px 0;
+      color: #526257;
+      font-size: 14px;
+    }
+
+    .record strong { font-size: 16px; }
+
+    .empty {
+      color: #718075;
+      text-align: center;
+      padding: 15px 0;
+    }
+
+    .note {
+      font-size: 12px;
+      line-height: 1.5;
+      color: #68766c;
+    }
+
+    @media (max-width: 420px) {
+      .summary { gap: 8px; }
+      .card { padding: 12px; }
+      .card strong { font-size: 20px; }
+      .row { gap: 8px; }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>🥛 My Milk Account</h1>
+    <p>Track your daily milk and payments</p>
+  </header>
+
+  <main>
+    <section class="summary">
+      <div class="card">
+        <span>Total Milk Purchased</span>
+        <strong id="totalMilk">0 L</strong>
+      </div>
+      <div class="card">
+        <span>Total Milk Bill</span>
+        <strong id="totalBill">₹0</strong>
+      </div>
+      <div class="card">
+        <span>Total Paid</span>
+        <strong id="totalPaid">₹0</strong>
+      </div>
+      <div class="card">
+        <span>Balance Due</span>
+        <strong id="balance">₹0</strong>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>➕ Add Daily Milk</h2>
+
+      <form id="milkForm">
+        <label for="milkDate">Date</label>
+        <input type="date" id="milkDate" required>
+
+        <div class="row">
+          <div>
+            <label for="milkType">Milk Type</label>
+            <select id="milkType">
+              <option value="Cow">Cow Milk</option>
+              <option value="Buffalo">Buffalo Milk</option>
+            </select>
+          </div>
+          <div>
+            <label for="quantity">Quantity (Litres)</label>
+            <input type="number" id="quantity"
+                   min="0.01" step="0.01"
+                   placeholder="e.g. 2" required>
+          </div>
+        </div>
+
+        <label for="rate">Price per Litre (₹)</label>
+        <input type="number" id="rate" min="0"
+               step="0.01" placeholder="e.g. 60" required>
+
+        <button class="primary" type="submit">
+          Save Milk Entry
+        </button>
+      </form>
+    </section>
+
+    <section class="panel">
+      <h2>💰 Record a Payment</h2>
+
+      <form id="paymentForm">
+        <label for="paymentDate">Payment Date</label>
+        <input type="date" id="paymentDate" required>
+
+        <div class="row">
+          <div>
+            <label for="amount">Amount (₹)</label>
+            <input type="number" id="amount"
+                   min="0.01" step="0.01"
+                   placeholder="e.g. 1000" required>
+          </div>
+          <div>
+            <label for="method">Payment Method</label>
+            <select id="method">
+              <option>Cash</option>
+              <option>UPI</option>
+              <option>Bank Transfer</option>
+              <option>Other</option>
+            </select>
+          </div>
+        </div>
+
+        <button class="primary" type="submit">
+          Save Payment
+        </button>
+      </form>
+    </section>
+
+    <section class="panel">
+      <h2>📒 Milk Purchase History</h2>
+      <div id="milkRecords"></div>
+    </section>
+
+    <section class="panel">
+      <h2>🧾 Payment History</h2>
+      <div id="paymentRecords"></div>
+    </section>
+
+    <section class="panel">
+      <h2>📊 Data Backup</h2>
+      <button class="secondary" id="exportBtn">
+        Export Records to CSV
+      </button>
+      <p class="note">
+        Records are stored in this browser on this device.
+        Export your records regularly to keep a backup.
+        Clearing browser data may erase saved records.
+      </p>
+    </section>
+  </main>
+
+  <script>
+    const STORAGE_KEY = "myMilkAccount_v1";
+
+    function loadData() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (!saved) return { milk: [], payments: [] };
+
+        const data = JSON.parse(saved);
+
+        if (!Array.isArray(data.milk) ||
+            !Array.isArray(data.payments)) {
+          throw new Error("Invalid saved data");
+        }
+
+        return data;
+      } catch (error) {
+        alert("Saved data could not be read. Do not add new records until you have checked your backup.");
+        return { milk: [], payments: [] };
+      }
+    }
+
+    let data = loadData();
+
+    function saveData() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        return true;
+      } catch (error) {
+        alert("Could not save data. Export or back up your records and check browser storage.");
+        return false;
+      }
+    }
+
+    function today() {
+      const d = new Date();
+      const offset = d.getTimezoneOffset();
+      return new Date(d.getTime() - offset * 60000)
+        .toISOString().slice(0, 10);
+    }
+
+    document.getElementById("milkDate").value = today();
+    document.getElementById("paymentDate").value = today();
+
+    function money(value) {
+      return "₹" + value.toLocaleString("en-IN", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
+    }
+
+    function totalBill() {
+      return data.milk.reduce(
+        (sum, item) => sum + item.quantity * item.rate, 0
+      );
+    }
+
+    function totalPaid() {
+      return data.payments.reduce(
+        (sum, item) => sum + item.amount, 0
+      );
+    }
+
+    function escapeHTML(value) {
+      return String(value).replace(/[&<>"']/g, char => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+      })[char]);
+    }
+
+    function render() {
+      const litres = data.milk.reduce(
+        (sum, item) => sum + item.quantity, 0
+      );
+
+      const bill = totalBill();
+      const paid = totalPaid();
+
+      document.getElementById("totalMilk").textContent =
+        litres.toLocaleString("en-IN") + " L";
+
+      document.getElementById("totalBill").textContent =
+        money(bill);
+
+      document.getElementById("totalPaid").textContent =
+        money(paid);
+
+      const balanceElement = document.getElementById("balance");
+      balanceElement.textContent = money(bill - paid);
+      balanceElement.style.color =
+        bill - paid > 0 ? "#b66a00" : "#167d43";
+
+      const milkContainer = document.getElementById("milkRecords");
+
+      if (data.milk.length === 0) {
+        milkContainer.innerHTML =
+          '<div class="empty">No milk entries yet.</div>';
+      } else {
+        milkContainer.innerHTML = [...data.milk]
+          .sort((a, b) => b.date.localeCompare(a.date))
+          .map(item => `
+            <div class="record">
+              <strong>${escapeHTML(item.date)} ·
+                ${escapeHTML(item.type)} Milk</strong>
+              <p>${item.quantity} L × ${money(item.rate)} per litre</p>
+              <p>Bill: <strong>${money(item.quantity * item.rate)}</strong></p>
+              <button class="danger"
+                data-delete-milk="${escapeHTML(item.id)}">
+                Delete Entry
+              </button>
+            </div>
+          `).join("");
+      }
+
+      const paymentContainer =
+        document.getElementById("paymentRecords");
+
+      if (data.payments.length === 0) {
+        paymentContainer.innerHTML =
+          '<div class="empty">No payments recorded yet.</div>';
+      } else {
+        paymentContainer.innerHTML = [...data.payments]
+          .sort((a, b) => b.date.localeCompare(a.date))
+          .map(item => `
+            <div class="record">
+              <strong>${escapeHTML(item.date)} ·
+                ${money(item.amount)}</strong>
+              <p>Method: ${escapeHTML(item.method)}</p>
+              <button class="danger"
+                data-delete-payment="${escapeHTML(item.id)}">
+                Delete Payment
+              </button>
+            </div>
+          `).join("");
+      }
+    }
+
+    document.getElementById("milkForm")
+      .addEventListener("submit", function(event) {
+        event.preventDefault();
+
+        const quantity = Number(
+          document.getElementById("quantity").value
+        );
+        const rate = Number(
+          document.getElementById("rate").value
+        );
+        const date = document.getElementById("milkDate").value;
+
+        if (!date || !Number.isFinite(quantity) ||
+            !Number.isFinite(rate) || quantity <= 0 || rate < 0) {
+          alert("Please enter a valid date, quantity and rate.");
+          return;
+        }
+
+        const entry = {
+          id: crypto.randomUUID(),
+          date,
+          type: document.getElementById("milkType").value,
+          quantity,
+          rate
+        };
+
+        data.milk.push(entry);
+
+        if (saveData()) {
+          this.reset();
+          document.getElementById("milkDate").value = today();
+          render();
+        } else {
+          data.milk.pop();
+        }
+      });
+
+    document.getElementById("paymentForm")
+      .addEventListener("submit", function(event) {
+        event.preventDefault();
+
+        const amount = Number(
+          document.getElementById("amount").value
+        );
+        const date = document.getElementById("paymentDate").value;
+
+        if (!date || !Number.isFinite(amount) || amount <= 0) {
+          alert("Please enter a valid date and payment amount.");
+          return;
+        }
+
+        const payment = {
+          id: crypto.randomUUID(),
+          date,
+          amount,
+          method: document.getElementById("method").value
+        };
+
+        data.payments.push(payment);
+
+        if (saveData()) {
+          this.reset();
+          document.getElementById("paymentDate").value = today();
+          render();
+        } else {
+          data.payments.pop();
+        }
+      });
+
+    document.addEventListener("click", function(event) {
+      const milkId = event.target.dataset.deleteMilk;
+      const paymentId = event.target.dataset.deletePayment;
+
+      if (milkId) {
+        if (!confirm("Delete this milk entry?")) return;
+
+        const old = data.milk;
+        data.milk = old.filter(item => item.id !== milkId);
+
+        if (saveData()) render();
+        else data.milk = old;
+      }
+
+      if (paymentId) {
+        if (!confirm("Delete this payment?")) return;
+
+        const old = data.payments;
+        data.payments = old.filter(item => item.id !== paymentId);
+
+        if (saveData()) render();
+        else data.payments = old;
+      }
+    });
+
+    document.getElementById("exportBtn")
+      .addEventListener("click", function() {
+        const rows = [
+          ["Record Type", "Date", "Milk Type", "Quantity (L)",
+           "Rate (Rs/L)", "Amount (Rs)", "Payment Method"]
+        ];
+
+        data.milk.forEach(item => rows.push([
+          "Milk", item.date, item.type, item.quantity,
+          item.rate, (item.quantity * item.rate).toFixed(2), ""
+        ]));
+
+        data.payments.forEach(item => rows.push([
+          "Payment", item.date, "", "", "",
+          item.amount.toFixed(2), item.method
+        ]));
+
+        const csv = rows.map(row =>
+          row.map(value =>
+            '"' + String(value).replace(/"/g, '""') + '"'
+          ).join(",")
+        ).join("\r\n");
+
+        const blob = new Blob(["\uFEFF" + csv], {
+          type: "text/csv;charset=utf-8;"
+        });
+
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = "milk-account-" + today() + ".csv";
+        link.click();
+        URL.revokeObjectURL(url);
+      });
+
+    render();
+  </script>
+  <script>
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("./service-worker.js")
+        .then(() => console.log("My Milk Account is ready offline"))
+        .catch(error => console.error("Service worker error:", error));
+    });
+  }
+</script>
+</body>
+</html>
