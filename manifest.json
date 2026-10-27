@@ -1,0 +1,21 @@
+
+{
+  "id": "./",
+  "name": "My Milk Account",
+  "short_name": "Milk Account",
+  "description": "Daily milk purchase and payment accounting",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f3f7f3",
+  "theme_color": "#167d43",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
